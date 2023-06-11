@@ -4,12 +4,15 @@ const dontenv = require("dotenv");
 const app = express();
 // Routes
 const auth = require("./api/routes/auth");
+const note = require("./api/routes/notes");
+
 // Config
 dontenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // This is the routes everything starts from api
 app.use("/api/auth", auth);
+app.use("/api", note);
 
 // path not found 404
 app.use((req, res, next) => {

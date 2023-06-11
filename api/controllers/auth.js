@@ -1,19 +1,31 @@
-const { User } = require("../../models/user");
+const User = require("../../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const timeForExpire = 60 * 3; // 3 minutes
+const timeForExpire = 60 * 60; // 3 minutes
 
 const login = async (req, res, next) => {
   // Check if user already in db
-  let user = await User.findOne({ email: req.body.email });
-  // If user not in db return 400
-  if (!user) return res.status(400).send("Invalid email or password!");
-  // Check if password is correct
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  // If password is not correct return 400
-  if (!validPassword) return res.status(400).send("Invalid email or password!");
-  // Return user
+  let user;
+  try {
+    user = await User.findOne({ email: req.body.email });
+  } catch (ex) {
+    const error = new Error("Invalid email!");
+    error.status = 400;
+    next(error);
+  }
+
+  try {
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+    if (!validPassword)
+      return res.status(400).send("Invalid email or password!");
+  } catch (ex) {
+    next(ex);
+  }
+
   const token = jwt.sign(
     { _id: user._id, exp: Math.floor(Date.now() / 1000) + timeForExpire },
     process.env.JWT_SECRET
@@ -29,20 +41,20 @@ const register = async (req, res, next) => {
   let user = await User.findOne({ email: req.body.email });
   // If user already registered return 400
   if (user) return res.status(400).send("user already registered!");
-  // Create new user
-  user = new User({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  // Hash password
-  const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(user.password, salt);
-  // Save user
+
   try {
+    // Create new user
+    user = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+    });
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
     await user.save();
   } catch (error) {
-    res.status(400).send(error.message);
+    next(error);
   }
 
   // Return user

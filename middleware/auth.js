@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
-function auth(req, res, next) {
+const User = require("../models/user");
+async function auth(req, res, next) {
   // get the token from barear token
   const token = req.header("Authorization").split(" ")[1];
   if (!token) return res.status(401).send("Access denied. No token provided.");
@@ -11,7 +12,13 @@ function auth(req, res, next) {
   }
   if (decoded.exp < Math.floor(Date.now() / 1000))
     return res.status(401).send("Access denied. Token expired.");
-  req.user = decoded;
+
+  try {
+    req.user = await User.findOne({ _id: decoded._id }).select("-password");
+  } catch (error) {
+    next(error);
+  }
+
   next();
 }
 
