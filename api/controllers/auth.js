@@ -50,6 +50,7 @@ const register = async (req, res, next) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
+      image: req.body.image,
     });
     // Hash password
     const salt = await bcrypt.genSalt(10);
