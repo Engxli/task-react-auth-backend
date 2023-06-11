@@ -38,6 +38,7 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   // Check if user already registered
+  console.log(req.body);
   let user;
   try {
     user = await User.findOne({ email: req.body.email });
