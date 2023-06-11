@@ -82,9 +82,9 @@ const myProfile = async (req, res, next) => {
 const getUsers = async (req, res, next) => {
   try {
     const users = await User.find({}).select("-password");
-    // users.forEach((user) => {
-    //   user.image = `${req.protocol}://${req.get("host")}/${user.image}`;
-    // });
+    users.forEach((user) => {
+      user.image = `${req.protocol}://${req.get("host")}/${user.image}`;
+    });
     res.status(200).send(users);
   } catch (error) {
     next(error);

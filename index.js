@@ -15,6 +15,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // This is the routes everything starts from api
+// use a middleware here to log evey request
+app.use((req, res, next) => {
+  console.log(req.method, req.url);
+  next();
+});
+
 app.use("/media", express.static(path.join(__dirname, "media")));
 app.use("/api/auth", auth);
 app.use("/api", note);
