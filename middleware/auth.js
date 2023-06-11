@@ -2,7 +2,10 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 async function auth(req, res, next) {
   // get the token from barear token
-  const token = req.header("Authorization").split(" ")[1];
+  let token;
+  if (req.header("Authorization")) {
+    token = req.header("Authorization").split(" ")[1];
+  }
   if (!token) return res.status(401).send("Access denied. No token provided.");
   let decoded;
   try {
