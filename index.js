@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dontenv = require("dotenv");
 const multer = require("multer");
 const app = express();
+const path = require("path");
 // Routes
 const auth = require("./api/routes/auth");
 const note = require("./api/routes/notes");
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // This is the routes everything starts from api
+app.use("/media", express.static(path.join(__dirname, "media")));
 app.use("/api/auth", auth);
 app.use("/api", note);
 
