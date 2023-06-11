@@ -41,7 +41,9 @@ const register = async (req, res, next) => {
   let user = await User.findOne({ email: req.body.email });
   // If user already registered return 400
   if (user) return res.status(400).send("user already registered!");
-
+  if (req.file) {
+    req.body.image = req.file.path;
+  }
   try {
     // Create new user
     user = new User({

@@ -12,6 +12,7 @@ const User = mongoose.model(
       maxlength: 255,
     },
     password: { type: String, required: true, minlength: 6, maxlength: 1024 },
+    image: { type: String },
   })
 );
 
