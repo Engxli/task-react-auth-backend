@@ -14,7 +14,15 @@ const createNote = async (req, res, next) => {
   } catch (error) {
     return res.status(400).send(error.message);
   }
-  // Return note
 };
 
-module.exports = { createNote };
+const getNotes = async (req, res, next) => {
+  try {
+    const notes = await Note.find({}).populate("user", "-password");
+    return res.status(200).send(notes);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createNote, getNotes };
