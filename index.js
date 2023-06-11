@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dontenv = require("dotenv");
-const multer = require("multer");
+const cors = require("cors");
 const app = express();
 const path = require("path");
 // Routes
@@ -10,6 +10,7 @@ const note = require("./api/routes/notes");
 
 // Config
 dontenv.config();
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
