@@ -79,4 +79,16 @@ const myProfile = async (req, res, next) => {
   res.status(200).send(user);
 };
 
-module.exports = { login, register, myProfile };
+const getUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({}).select("-password");
+    users.forEach((user) => {
+      user.image = `${req.protocol}://${req.get("host")}/${user.image}`;
+    });
+    res.status(200).send(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { login, register, myProfile, getUsers };

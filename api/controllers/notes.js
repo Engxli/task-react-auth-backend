@@ -25,4 +25,20 @@ const getNotes = async (req, res, next) => {
   }
 };
 
-module.exports = { createNote, getNotes };
+const getNote = async (req, res, next) => {
+  try {
+    const note = await Note.findById(req.params.id).populate(
+      "user",
+      "-password"
+    );
+    // get absolute path of the image
+
+    note.user.image = `${req.protocol}://${req.get("host")}/${note.user.image}`;
+
+    return res.status(200).send(note);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createNote, getNotes, getNote };
