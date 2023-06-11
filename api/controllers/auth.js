@@ -38,7 +38,12 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
   // Check if user already registered
-  let user = await User.findOne({ email: req.body.email });
+  let user;
+  try {
+    user = await User.findOne({ email: req.body.email });
+  } catch (error) {
+    next(error);
+  }
   // If user already registered return 400
   if (user) return res.status(400).send("user already registered!");
   if (req.file) {
