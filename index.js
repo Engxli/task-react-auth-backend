@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dontenv = require("dotenv");
+const multer = require("multer");
 const app = express();
 // Routes
 const auth = require("./api/routes/auth");
@@ -10,6 +11,7 @@ const note = require("./api/routes/notes");
 dontenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 // This is the routes everything starts from api
 app.use("/api/auth", auth);
 app.use("/api", note);
@@ -37,7 +39,3 @@ mongoose
 app.listen(process.env.PORT || 5000, () => {
   console.log(`Listening on port ${process.env.PORT || 5000}`);
 });
-
-// app.listen(process.PORT || 5000, () => {
-//   console.log(`Listening on port ${process.PORT || 5000}`);
-// });
