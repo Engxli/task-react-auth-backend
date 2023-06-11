@@ -37,43 +37,42 @@ const login = async (req, res, next) => {
 };
 
 const register = async (req, res, next) => {
-  // Check if user already registered
-  console.log(req.body);
-  let user;
   try {
-    user = await User.findOne({ email: req.body.email });
-  } catch (error) {
-    next(error);
-  }
-  // If user already registered return 400
-  if (user) return res.status(400).send("user already registered!");
-  if (req.file) {
-    req.body.image = req.file.path;
-  }
-  try {
+    // Check if user already registered
+    console.log(req.body);
+    const existingUser = await User.findOne({ email: req.body.email });
+    if (existingUser) {
+      return res.status(400).send("User already registered!");
+    }
+
+    let imagePath = "";
+    if (req.file) {
+      imagePath = req.file.path;
+    }
+
     // Create new user
-    user = new User({
+    const newUser = new User({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
-      image: req.body.image,
+      image: imagePath,
     });
+
     // Hash password
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password, salt);
-    await user.save();
+    const salt = bcrypt.genSaltSync(10);
+    newUser.password = bcrypt.hashSync(newUser.password, salt);
+
+    await newUser.save();
+
+    // Return user
+    const token = jwt.sign(
+      { _id: newUser._id, exp: Math.floor(Date.now() / 1000) + timeForExpire },
+      process.env.JWT_SECRET
+    );
+    res.status(201).send({ token });
   } catch (error) {
     next(error);
   }
-
-  // Return user
-  const token = jwt.sign(
-    { _id: user._id, exp: Math.floor(Date.now() / 1000) + timeForExpire },
-    process.env.JWT_SECRET
-  );
-  res.status(201).send({
-    token,
-  });
 };
 
 const myProfile = async (req, res, next) => {
