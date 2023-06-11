@@ -14,7 +14,7 @@ const login = async (req, res, next) => {
     error.status = 400;
     next(error);
   }
-
+  if (!user) return res.status(400).send("Invalid email or password!");
   try {
     const validPassword = await bcrypt.compare(
       req.body.password,
