@@ -7,9 +7,14 @@ const path = require("path");
 // Routes
 const auth = require("./api/routes/auth");
 const note = require("./api/routes/notes");
+const passport = require("passport");
+const { localStrategy, jwtStrategy } = require("./middleware/passport");
 
 // Config
 dontenv.config();
+app.use(passport.initialize());
+passport.use("local", localStrategy);
+passport.use("jwt", jwtStrategy);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
